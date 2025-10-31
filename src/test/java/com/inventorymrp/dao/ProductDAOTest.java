@@ -21,7 +21,7 @@ class ProductDAOTest {
     static void setupDatabase() {
         // Use in-memory H2 database for testing
         sql2o = DatabaseUtil.getSql2o("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
-        DatabaseUtil.initializeDatabase();
+        DatabaseUtil.initializeDatabase("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
     }
 
     @BeforeEach

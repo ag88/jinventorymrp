@@ -20,7 +20,7 @@ class InventoryServiceTest {
     @BeforeAll
     static void setupDatabase() {
         sql2o = DatabaseUtil.getSql2o("jdbc:h2:mem:testdb4;DB_CLOSE_DELAY=-1", "sa", "");
-        DatabaseUtil.initializeDatabase();
+        DatabaseUtil.initializeDatabase("jdbc:h2:mem:testdb4;DB_CLOSE_DELAY=-1", "sa", "");
     }
 
     @BeforeEach

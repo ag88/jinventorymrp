@@ -80,12 +80,19 @@ All panels include:
 - Error handling and user feedback
 
 ### 6. Database ✓
-H2 embedded database with automatic schema creation:
+H2 embedded database with Flyway-managed schema migrations:
 
+- **Migration Tool**: Flyway for version-controlled database schema
+- **Migration Scripts**: 4 SQL files in `src/main/resources/db/migration/`
+  - V1: Products table
+  - V2: BOM items table  
+  - V3: Inventory transactions table
+  - V4: Purchase orders table
 - **Tables**: products, bom_items, inventory_transactions, purchase_orders
 - **Foreign Keys**: Maintain referential integrity
 - **Indexes**: Auto-generated on primary keys
 - **Location**: `./data/inventorydb.mv.db` (excluded from git)
+- **Schema History**: Tracked by Flyway in `flyway_schema_history` table
 
 ### 7. JUnit 5 Tests ✓
 Comprehensive test coverage (45 tests, 100% passing):

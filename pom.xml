@@ -20,6 +20,7 @@
         <h2.version>2.1.214</h2.version>
         <sql2o.version>1.6.0</sql2o.version>
         <junit.version>5.9.3</junit.version>
+        <flyway.version>9.22.3</flyway.version>
     </properties>
 
     <dependencies>
@@ -35,6 +36,13 @@
             <groupId>org.sql2o</groupId>
             <artifactId>sql2o</artifactId>
             <version>${sql2o.version}</version>
+        </dependency>
+
+        <!-- Flyway for database migrations -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
         </dependency>
 
         <!-- JUnit 5 -->

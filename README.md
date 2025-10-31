@@ -16,6 +16,7 @@ A comprehensive inventory management system with Material Requirements Planning 
 - **Java**: 11
 - **Build System**: Maven
 - **Database**: H2 (embedded)
+- **Database Migration**: Flyway
 - **ORM**: sql2o
 - **UI Framework**: Swing
 - **Testing**: JUnit 5
@@ -132,9 +133,17 @@ mvn exec:java -Dexec.mainClass="com.inventorymrp.ui.MainApp"
 
 ## Database
 
-The application uses an embedded H2 database stored in `./data/inventorydb.mv.db`. The database is automatically initialized on first run.
+The application uses an embedded H2 database stored in `./data/inventorydb.mv.db`. Database schema is managed by **Flyway** for version-controlled migrations.
 
-To reset the database, simply delete the `data` directory.
+### Database Migrations
+
+Migration scripts are located in `src/main/resources/db/migration/`:
+- `V1__Create_products_table.sql` - Products table
+- `V2__Create_bom_items_table.sql` - Bill of Materials table
+- `V3__Create_inventory_transactions_table.sql` - Inventory transactions table
+- `V4__Create_purchase_orders_table.sql` - Purchase orders table
+
+Flyway automatically applies migrations on application startup. To reset the database, simply delete the `data` directory.
 
 ## Testing
 
