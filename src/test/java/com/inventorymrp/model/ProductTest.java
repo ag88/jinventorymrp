@@ -19,7 +19,8 @@ class ProductTest {
         assertEquals("Test Product", product.getName());
         assertEquals(0, product.getStockQuantity());
         assertEquals(0, product.getReorderLevel());
-        assertEquals(0, product.getLeadTimeDays());
+        assertEquals(0.0, product.getOrderLeadTime());
+        assertEquals(0.0, product.getItemLeadTime());
         assertFalse(product.getIsAssembly());
     }
 
@@ -33,7 +34,8 @@ class ProductTest {
         product.setUnitCost(new BigDecimal("100.50"));
         product.setStockQuantity(50);
         product.setReorderLevel(10);
-        product.setLeadTimeDays(5);
+        product.setOrderLeadTime(5.0);
+        product.setItemLeadTime(0.5);
         product.setIsAssembly(true);
         
         assertEquals("P002", product.getCode());
@@ -43,7 +45,8 @@ class ProductTest {
         assertEquals(new BigDecimal("100.50"), product.getUnitCost());
         assertEquals(50, product.getStockQuantity());
         assertEquals(10, product.getReorderLevel());
-        assertEquals(5, product.getLeadTimeDays());
+        assertEquals(5.0, product.getOrderLeadTime());
+        assertEquals(0.5, product.getItemLeadTime());
         assertTrue(product.getIsAssembly());
     }
 

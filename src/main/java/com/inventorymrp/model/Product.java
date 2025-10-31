@@ -16,7 +16,8 @@ public class Product {
     private BigDecimal unitCost;
     private Integer stockQuantity;
     private Integer reorderLevel;
-    private Integer leadTimeDays;
+    private Double orderLeadTime;
+    private Double itemLeadTime;
     private Boolean isAssembly; // true if this product has a BOM
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -24,7 +25,8 @@ public class Product {
     public Product() {
         this.stockQuantity = 0;
         this.reorderLevel = 0;
-        this.leadTimeDays = 0;
+        this.orderLeadTime = 0.0;
+        this.itemLeadTime = 0.0;
         this.isAssembly = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -101,12 +103,20 @@ public class Product {
         this.reorderLevel = reorderLevel;
     }
 
-    public Integer getLeadTimeDays() {
-        return leadTimeDays;
+    public Double getOrderLeadTime() {
+        return orderLeadTime;
     }
 
-    public void setLeadTimeDays(Integer leadTimeDays) {
-        this.leadTimeDays = leadTimeDays;
+    public void setOrderLeadTime(Double orderLeadTime) {
+        this.orderLeadTime = orderLeadTime;
+    }
+
+    public Double getItemLeadTime() {
+        return itemLeadTime;
+    }
+
+    public void setItemLeadTime(Double itemLeadTime) {
+        this.itemLeadTime = itemLeadTime;
     }
 
     public Boolean getIsAssembly() {

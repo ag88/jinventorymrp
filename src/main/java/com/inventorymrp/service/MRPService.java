@@ -92,7 +92,7 @@ public class MRPService {
             
             if (netRequirement > 0) {
                 // Create purchase order
-                LocalDate expectedDelivery = LocalDate.now().plusDays(material.getLeadTimeDays());
+                LocalDate expectedDelivery = LocalDate.now().plusDays(material.getOrderLeadTime() != null ? material.getOrderLeadTime().longValue() : 0);
                 PurchaseOrder po = new PurchaseOrder(materialId, netRequirement, expectedDelivery);
                 po.setReference("MRP-" + productId + "-" + System.currentTimeMillis());
                 purchaseOrders.add(po);
@@ -131,6 +131,23 @@ public class MRPService {
         }
 
         return availability;
+    }
+
+    /**
+     * Calculate total lead time for a product based on demand quantity.
+     * For BOM items: lead time = orderLeadTime + (number of items * itemLeadTime)
+     */
+    public double calculateLeadTime(Long productId, Integer demandQuantity) {
+        Product product = productDAO.findById(productId);
+        if (product == null) {
+            return 0.0;
+        }
+
+        double orderLeadTime = product.getOrderLeadTime() != null ? product.getOrderLeadTime() : 0.0;
+        double itemLeadTime = product.getItemLeadTime() != null ? product.getItemLeadTime() : 0.0;
+        
+        // BOM item lead time = orderLeadTime + number of items x itemLeadTime
+        return orderLeadTime + (demandQuantity * itemLeadTime);
     }
 
     /**
