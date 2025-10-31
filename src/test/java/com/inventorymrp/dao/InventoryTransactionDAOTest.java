@@ -21,8 +21,9 @@ class InventoryTransactionDAOTest {
 
     @BeforeAll
     static void setupDatabase() {
-        sql2o = DatabaseUtil.getSql2o("jdbc:h2:mem:testdb5;DB_CLOSE_DELAY=-1", "sa", "");
-        DatabaseUtil.initializeDatabase("jdbc:h2:mem:testdb5;DB_CLOSE_DELAY=-1", "sa", "");
+        String dbName = "testdb_invtxn_" + System.currentTimeMillis();
+        sql2o = DatabaseUtil.getSql2o("jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=-1", "sa", "");
+        DatabaseUtil.initializeDatabase("jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=-1", "sa", "");
     }
 
     @BeforeEach
