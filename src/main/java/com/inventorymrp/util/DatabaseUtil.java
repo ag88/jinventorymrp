@@ -8,7 +8,8 @@ import org.sql2o.Sql2o;
  */
 public class DatabaseUtil {
     private static Sql2o sql2o;
-    private static final String DB_URL = "jdbc:h2:./data/inventorydb;AUTO_SERVER=TRUE";
+    //private static final String DB_URL = "jdbc:h2:./data/inventorydb;AUTO_SERVER=TRUE";
+    private static final String DB_URL = "jdbc:h2:./data/inventorydb";
     private static final String DB_USER = "sa";
     private static final String DB_PASSWORD = "";
 
