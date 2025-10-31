@@ -2,6 +2,12 @@ package com.inventorymrp.util;
 
 import org.flywaydb.core.Flyway;
 import org.sql2o.Sql2o;
+import org.sql2o.converters.Converter;
+import org.sql2o.quirks.NoQuirks;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Database utility class for managing H2 database connection.
@@ -20,16 +26,24 @@ public class DatabaseUtil {
 
     public static Sql2o getSql2o() {
         if (sql2o == null) {
-            sql2o = new Sql2o(DB_URL, DB_USER, DB_PASSWORD);
-            sql2o.setDefaultCaseSensitive(false);
+            sql2o = createSql2oWithConverters(DB_URL, DB_USER, DB_PASSWORD);
         }
         return sql2o;
     }
 
     public static Sql2o getSql2o(String url, String user, String password) {
-        sql2o = new Sql2o(url, user, password);
-        sql2o.setDefaultCaseSensitive(false);
+        sql2o = createSql2oWithConverters(url, user, password);
         return sql2o;
+    }
+    
+    private static Sql2o createSql2oWithConverters(String url, String user, String password) {
+        // Register LocalDateTime converter for Java 8 time support
+        Map<Class, Converter> converters = new HashMap<>();
+        converters.put(LocalDateTime.class, new LocalDateTimeConverter());
+        
+        Sql2o instance = new Sql2o(url, user, password, new NoQuirks(converters));
+        instance.setDefaultCaseSensitive(false);
+        return instance;
     }
 
     public static void initializeDatabase() {
