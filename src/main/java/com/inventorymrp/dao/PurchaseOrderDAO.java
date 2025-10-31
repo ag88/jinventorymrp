@@ -68,7 +68,16 @@ public class PurchaseOrderDAO {
     }
 
     public List<PurchaseOrder> findAll() {
-        String sql = "SELECT * FROM purchase_orders ORDER BY order_date DESC";
+        String sql = "SELECT product_id as productId, " 
+        		+ "quantity, "
+        		+ "status, "
+        		+ "order_date as orderDate, "
+        		+ "expected_delivery_date as expectedDeliveryDate, "
+        		+ "supplier, "
+        		+ "reference, "
+        		+ "created_at as createdAt, "
+        		+ "updated_at as updatedAt "
+        		+ "FROM purchase_orders ORDER BY order_date DESC";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
                 .executeAndFetch(PurchaseOrder.class);
