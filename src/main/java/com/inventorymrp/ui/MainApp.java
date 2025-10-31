@@ -79,9 +79,17 @@ public class MainApp extends JFrame {
         // Help menu
         JMenu helpMenu = new JMenu("Help");
         JMenuItem aboutItem = new JMenuItem("About");
+        String msg = 
+        "Inventory Management with MRP\nVersion 1.0\n\nManages inventory and material requirements planning.\n\n" + 
+        "THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,\n" +
+        "INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR\n" +
+        "PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE\n" +
+        "FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n" +
+        "ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.";
+        
         aboutItem.addActionListener(e -> 
             JOptionPane.showMessageDialog(this, 
-                "Inventory Management with MRP\nVersion 1.0\n\nManages inventory and material requirements planning.",
+                msg,
                 "About", 
                 JOptionPane.INFORMATION_MESSAGE));
         helpMenu.add(aboutItem);

@@ -1,6 +1,17 @@
 # Inventory Management with MRP
 
-A comprehensive inventory management system with Material Requirements Planning (MRP) capabilities, built with Java 11, H2 database, and Swing UI.
+This is a demo / toy project for inventory management with MRP capabilities.
+
+## MRP
+
+MRP (Materials Requirements Planning) in a naive notion is basically to acquire / buy your stocks
+based on the BOM (Bill of Materials). Accordingly, conventional re-order point re-stocking, that does not
+consider BOM, can run into issues of some parts running out too fast. While some low usage parts could be in surplus.
+
+This app attempts to compute the required quantity of parts based on a BOM, and make some lead time estimates.
+But for its purposes, it is a bare minimum, naive 'MRP'. 
+
+It is more of / intended as a demo / toy to experiment with 'MRP' concepts 
 
 ## Features
 
@@ -8,6 +19,8 @@ A comprehensive inventory management system with Material Requirements Planning 
 - **Bill of Materials (BOM)**: Define hierarchical product structures with parent-child relationships
 - **Inventory Tracking**: Track stock movements with transactions (IN, OUT, ADJUSTMENT)
 - **MRP Calculation**: Calculate material requirements for dependent demand based on BOM
+- **Lead time estimates**: lead time = order lead time + quantity x item lead time, 
+  based on the longest lead time for each of the parts
 - **Purchase Order Management**: Generate and manage purchase orders based on stock shortages
 - **Swing UI**: User-friendly graphical interface for all operations
 
@@ -20,6 +33,8 @@ A comprehensive inventory management system with Material Requirements Planning 
 - **ORM**: sql2o
 - **UI Framework**: Swing
 - **Testing**: JUnit 5
+
+App is created with aid of Github Copilot.
 
 ## Project Structure
 
@@ -154,7 +169,10 @@ The project includes comprehensive unit and integration tests:
 
 All tests use in-memory H2 databases for isolation.
 
-## License
+## NO WARRANTY
 
-This is a demonstration project for inventory management with MRP capabilities.
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
 
