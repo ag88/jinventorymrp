@@ -12,145 +12,183 @@ import java.time.LocalDate;
 import java.util.*;
 
 /**
- * MRP (Material Requirements Planning) Service.
- * Calculates material requirements based on production demand and BOM.
+ * MRP (Material Requirements Planning) Service. Calculates material
+ * requirements based on production demand and BOM.
  */
 public class MRPService {
-    private final ProductDAO productDAO;
-    private final BOMItemDAO bomItemDAO;
-    private final PurchaseOrderDAO purchaseOrderDAO;
+	private final ProductDAO productDAO;
+	private final BOMItemDAO bomItemDAO;
+	private final PurchaseOrderDAO purchaseOrderDAO;
 
-    public MRPService() {
-        this.productDAO = new ProductDAO();
-        this.bomItemDAO = new BOMItemDAO();
-        this.purchaseOrderDAO = new PurchaseOrderDAO();
-    }
+	public MRPService() {
+		this.productDAO = new ProductDAO();
+		this.bomItemDAO = new BOMItemDAO();
+		this.purchaseOrderDAO = new PurchaseOrderDAO();
+	}
 
-    public MRPService(ProductDAO productDAO, BOMItemDAO bomItemDAO, PurchaseOrderDAO purchaseOrderDAO) {
-        this.productDAO = productDAO;
-        this.bomItemDAO = bomItemDAO;
-        this.purchaseOrderDAO = purchaseOrderDAO;
-    }
+	public MRPService(ProductDAO productDAO, BOMItemDAO bomItemDAO, PurchaseOrderDAO purchaseOrderDAO) {
+		this.productDAO = productDAO;
+		this.bomItemDAO = bomItemDAO;
+		this.purchaseOrderDAO = purchaseOrderDAO;
+	}
 
-    /**
-     * Calculate material requirements for producing a given quantity of a product.
-     * This is the main MRP calculation that determines dependent demand.
-     */
-    public Map<Long, Integer> calculateMaterialRequirements(Long productId, Integer demandQuantity) {
-        Map<Long, Integer> requirements = new HashMap<>();
-        calculateRequirementsRecursive(productId, demandQuantity, requirements);
-        return requirements;
-    }
+	/**
+	 * Calculate material requirements for producing a given quantity of a product.
+	 * This is the main MRP calculation that determines dependent demand.
+	 */
+	public Map<Long, Integer> calculateMaterialRequirements(Long productId, Integer demandQuantity) {
+		Map<Long, Integer> requirements = new HashMap<>();
+		calculateRequirementsRecursive(productId, demandQuantity, requirements);
+		return requirements;
+	}
 
-    /**
-     * Recursive method to calculate requirements through the BOM hierarchy.
-     */
-    private void calculateRequirementsRecursive(Long productId, Integer quantity, 
-                                                 Map<Long, Integer> requirements) {
-        Product product = productDAO.findById(productId);
-        if (product == null) {
-            return;
-        }
+	/**
+	 * Recursive method to calculate requirements through the BOM hierarchy.
+	 */
+	private void calculateRequirementsRecursive(Long productId, Integer quantity, Map<Long, Integer> requirements) {
+		Product product = productDAO.findById(productId);
+		if (product == null) {
+			return;
+		}
 
-        // If this product is an assembly, calculate requirements for its components
-        if (product.getIsAssembly()) {
-            List<BOMItem> bomItems = bomItemDAO.findByParentProductId(productId);
-            for (BOMItem bomItem : bomItems) {
-                // Calculate required quantity of this component
-                int requiredQty = bomItem.getQuantity().multiply(new BigDecimal(quantity))
-                                         .intValue();
-                
-                Long childId = bomItem.getChildProductId();
-                
-                // Recursively calculate for sub-assemblies or add to requirements for components
-                calculateRequirementsRecursive(childId, requiredQty, requirements);
-            }
-        } else {
-            // For non-assembly items (leaf components), add to requirements
-            requirements.put(productId, requirements.getOrDefault(productId, 0) + quantity);
-        }
-    }
+		// If this product is an assembly, calculate requirements for its components
+		if (product.getIsAssembly()) {
+			List<BOMItem> bomItems = bomItemDAO.findByParentProductId(productId);
+			for (BOMItem bomItem : bomItems) {
+				// Calculate required quantity of this component
+				int requiredQty = bomItem.getQuantity().multiply(new BigDecimal(quantity)).intValue();
 
-    /**
-     * Generate purchase orders based on material requirements and current stock.
-     */
-    public List<PurchaseOrder> generatePurchaseOrders(Long productId, Integer demandQuantity) {
-        List<PurchaseOrder> purchaseOrders = new ArrayList<>();
-        Map<Long, Integer> requirements = calculateMaterialRequirements(productId, demandQuantity);
+				Long childId = bomItem.getChildProductId();
 
-        for (Map.Entry<Long, Integer> entry : requirements.entrySet()) {
-            Long materialId = entry.getKey();
-            Integer requiredQty = entry.getValue();
-            
-            Product material = productDAO.findById(materialId);
-            if (material == null) {
-                continue;
-            }
+				// Recursively calculate for sub-assemblies or add to requirements for
+				// components
+				calculateRequirementsRecursive(childId, requiredQty, requirements);
+			}
+		} else {
+			// For non-assembly items (leaf components), add to requirements
+			requirements.put(productId, requirements.getOrDefault(productId, 0) + quantity);
+		}
+	}
 
-            // Calculate net requirement (required - available stock)
-            Integer netRequirement = requiredQty - material.getStockQuantity();
-            
-            if (netRequirement > 0) {
-                // Create purchase order
-                long leadTimeDays = material.getOrderLeadTime() != null ? Math.round(material.getOrderLeadTime()) : 0;
-                LocalDate expectedDelivery = LocalDate.now().plusDays(leadTimeDays);
-                PurchaseOrder po = new PurchaseOrder(materialId, netRequirement, expectedDelivery);
-                po.setReference("MRP-" + productId + "-" + System.currentTimeMillis());
-                purchaseOrders.add(po);
-            }
-        }
+	/**
+	 * Generate purchase orders based on material requirements and current stock.
+	 */
+	public List<PurchaseOrder> generatePurchaseOrders(Long productId, Integer demandQuantity) {
+		List<PurchaseOrder> purchaseOrders = new ArrayList<>();
+		Map<Long, Integer> requirements = calculateMaterialRequirements(productId, demandQuantity);
 
-        return purchaseOrders;
-    }
+		for (Map.Entry<Long, Integer> entry : requirements.entrySet()) {
+			Long materialId = entry.getKey();
+			Integer requiredQty = entry.getValue();
 
-    /**
-     * Check if sufficient materials are available to produce the demanded quantity.
-     */
-    public Map<Long, MaterialAvailability> checkMaterialAvailability(Long productId, Integer demandQuantity) {
-        Map<Long, MaterialAvailability> availability = new HashMap<>();
-        Map<Long, Integer> requirements = calculateMaterialRequirements(productId, demandQuantity);
+			Product material = productDAO.findById(materialId);
+			if (material == null) {
+				continue;
+			}
 
-        for (Map.Entry<Long, Integer> entry : requirements.entrySet()) {
-            Long materialId = entry.getKey();
-            Integer requiredQty = entry.getValue();
-            
-            Product material = productDAO.findById(materialId);
-            if (material == null) {
-                continue;
-            }
+			// Calculate net requirement (required - available stock)
+			Integer netRequirement = requiredQty - material.getStockQuantity();
 
-            MaterialAvailability avail = new MaterialAvailability();
-            avail.setProductId(materialId);
-            avail.setProductCode(material.getCode());
-            avail.setProductName(material.getName());
-            avail.setRequiredQuantity(requiredQty);
-            avail.setAvailableQuantity(material.getStockQuantity());
-            avail.setShortage(Math.max(0, requiredQty - material.getStockQuantity()));
-            avail.setSufficient(material.getStockQuantity() >= requiredQty);
-            
-            availability.put(materialId, avail);
-        }
+			if (netRequirement > 0) {
+				// Create purchase order
+				//long leadTimeDays = material.getOrderLeadTime() != null ? Math.round(material.getOrderLeadTime()) : 0;
+				long leadTimeDays = (long) calculateLeadTimeRecursive(material.getId(), netRequirement, true);
+				LocalDate expectedDelivery = LocalDate.now().plusDays(leadTimeDays);
+				PurchaseOrder po = new PurchaseOrder(materialId, netRequirement, expectedDelivery);
+				po.setReference("MRP-" + productId + "-" + System.currentTimeMillis());
+				purchaseOrders.add(po);
+			}
+		}
 
-        return availability;
-    }
+		return purchaseOrders;
+	}
 
-    /**
-     * Calculate total lead time for a product based on demand quantity.
-     * Lead time = orderLeadTime + (number of items * itemLeadTime)
-     * This applies to all products, providing flexibility for different production scenarios.
-     */
-    public double calculateLeadTime(Long productId, Integer demandQuantity) {
-        Product product = productDAO.findById(productId);
-        if (product == null) {
-            return 0.0;
-        }
+	/**
+	 * Check if sufficient materials are available to produce the demanded quantity.
+	 */
+	public Map<Long, MaterialAvailability> checkMaterialAvailability(Long productId, Integer demandQuantity) {
+		Map<Long, MaterialAvailability> availability = new HashMap<>();
+		Map<Long, Integer> requirements = calculateMaterialRequirements(productId, demandQuantity);
 
-        double orderLeadTime = product.getOrderLeadTime() != null ? product.getOrderLeadTime() : 0.0;
-        double itemLeadTime = product.getItemLeadTime() != null ? product.getItemLeadTime() : 0.0;
-        
-        // BOM item lead time = orderLeadTime + number of items x itemLeadTime
-        return orderLeadTime + (demandQuantity * itemLeadTime);
-    }
+		for (Map.Entry<Long, Integer> entry : requirements.entrySet()) {
+			Long materialId = entry.getKey();
+			Integer requiredQty = entry.getValue();
+
+			Product material = productDAO.findById(materialId);
+			if (material == null) {
+				continue;
+			}
+
+			MaterialAvailability avail = new MaterialAvailability();
+			avail.setProductId(materialId);
+			avail.setProductCode(material.getCode());
+			avail.setProductName(material.getName());
+			avail.setRequiredQuantity(requiredQty);
+			avail.setAvailableQuantity(material.getStockQuantity());
+			avail.setShortage(Math.max(0, requiredQty - material.getStockQuantity()));
+			avail.setSufficient(material.getStockQuantity() >= requiredQty);
+
+			availability.put(materialId, avail);
+		}
+
+		return availability;
+	}
+
+	/**
+	 * Calculate total lead time for a product based on demand quantity. Lead time =
+	 * orderLeadTime + (number of items * itemLeadTime) This applies to all
+	 * products, providing flexibility for different production scenarios.
+	 */
+	public double calculateLeadTime(Long productId, Integer quantity, boolean exclstock) {
+		Product product = productDAO.findById(productId);
+		if (product == null) {
+			return 0.0;
+		}
+
+		double orderLeadTime = product.getOrderLeadTime() != null ? product.getOrderLeadTime() : 0.0;
+		double itemLeadTime = product.getItemLeadTime() != null ? product.getItemLeadTime() : 0.0;
+		
+		if (exclstock) {
+			// BOM item lead time = orderLeadTime + number of items x itemLeadTime
+			return orderLeadTime + (quantity * itemLeadTime);
+		} else {
+			if (product.getStockQuantity() >= quantity )
+				return 0.0;
+			else
+				return orderLeadTime + ((quantity - product.getStockQuantity()) * itemLeadTime);
+		}
+	}
+
+	public double calculateLeadTimeRecursive(Long productId, Integer quantity, boolean exclstock) { 
+
+		Product product = productDAO.findById(productId);
+		if (product == null) {
+			return 0.0;
+		}
+
+		// If this product is an assembly, calculate lead time for its components
+		double longestChildLeadTime = 0.0;
+		if (product.getIsAssembly()) {
+			List<BOMItem> bomItems = bomItemDAO.findByParentProductId(productId);			
+			for (BOMItem bomItem : bomItems) {
+				// Calculate required quantity of this component
+				int requiredQty = bomItem.getQuantity().multiply(new BigDecimal(quantity))
+						.intValue();
+
+				Long childId = bomItem.getChildProductId();
+
+				// Recursively calculate for sub-assemblies or add to requirements for components
+				double childLeadTime = calculateLeadTimeRecursive(childId, requiredQty, exclstock);
+				if (childLeadTime > longestChildLeadTime)
+					longestChildLeadTime = childLeadTime;
+			}
+		}
+		
+		double leadtime = calculateLeadTime(productId, quantity, exclstock) + longestChildLeadTime;
+		return leadtime;
+		
+	}
+
 
     /**
      * Inner class to represent material availability status.

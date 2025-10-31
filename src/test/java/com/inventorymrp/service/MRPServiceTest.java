@@ -242,7 +242,7 @@ class MRPServiceTest {
 
         // Lead time = orderLeadTime + (quantity * itemLeadTime)
         // = 5.0 + (10 * 0.5) = 10.0
-        double leadTime = mrpService.calculateLeadTime(product.getId(), 10);
+        double leadTime = mrpService.calculateLeadTime(product.getId(), 10, false);
         assertEquals(10.0, leadTime, 0.001);
     }
 
@@ -255,7 +255,7 @@ class MRPServiceTest {
 
         // Lead time = orderLeadTime + (quantity * itemLeadTime)
         // = 3.0 + (20 * 0.0) = 3.0
-        double leadTime = mrpService.calculateLeadTime(product.getId(), 20);
+        double leadTime = mrpService.calculateLeadTime(product.getId(), 20, false);
         assertEquals(3.0, leadTime, 0.001);
     }
 }

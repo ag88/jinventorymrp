@@ -1,6 +1,7 @@
 package com.inventorymrp.ui;
 
 import com.inventorymrp.dao.ProductDAO;
+import com.inventorymrp.dao.PurchaseOrderDAO;
 import com.inventorymrp.model.Product;
 import com.inventorymrp.service.MRPService;
 import com.inventorymrp.service.MRPService.MaterialAvailability;
@@ -17,9 +18,11 @@ import java.util.Map;
 public class MRPPanel extends JPanel {
     private final MRPService mrpService;
     private final ProductDAO productDAO;
+    private JComboBox<String> productCombo; 
     private JTable resultsTable;
     private DefaultTableModel tableModel;
     private JLabel leadTimeValueLabel;
+    private JCheckBox cbExclStock;    
     
     public MRPPanel() {
         this.mrpService = new MRPService();
@@ -31,7 +34,7 @@ public class MRPPanel extends JPanel {
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         inputPanel.add(new JLabel("Select Product:"));
         
-        JComboBox<String> productCombo = new JComboBox<>();
+        productCombo = new JComboBox<>();
         inputPanel.add(productCombo);
         
         inputPanel.add(new JLabel("Demand Quantity:"));
@@ -57,7 +60,7 @@ public class MRPPanel extends JPanel {
         };
         resultsTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(resultsTable);
-        
+                
         // Create bottom panel for lead time display
         JPanel leadTimePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leadTimePanel.add(new JLabel("Lead Time:"));
@@ -66,18 +69,27 @@ public class MRPPanel extends JPanel {
         
         add(inputPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(leadTimePanel, BorderLayout.SOUTH);
+        
+        JPanel p1 = new JPanel();        
+        p1.setLayout(new BoxLayout(p1, BoxLayout.PAGE_AXIS));
+        cbExclStock = new JCheckBox("Exclude existing stocks");
+        cbExclStock.setAlignmentX(LEFT_ALIGNMENT);
+        p1.add(cbExclStock);
+        leadTimePanel.setAlignmentX(LEFT_ALIGNMENT);
+        p1.add(leadTimePanel);
+        add(p1, BorderLayout.SOUTH);
         
         // Load products
-        loadProducts(productCombo);
+        loadProducts();
         
         // Button actions
         calculateButton.addActionListener(e -> calculateRequirements(productCombo, quantityField));
         checkAvailabilityButton.addActionListener(e -> checkAvailability(productCombo, quantityField));
         generatePOButton.addActionListener(e -> generatePurchaseOrders(productCombo, quantityField));
+        
     }
     
-    private void loadProducts(JComboBox<String> productCombo) {
+    public void loadProducts() {
         productCombo.removeAllItems();
         List<Product> products = productDAO.findAll();
         for (Product p : products) {
@@ -99,7 +111,7 @@ public class MRPPanel extends JPanel {
             Map<Long, Integer> requirements = mrpService.calculateMaterialRequirements(productId, quantity);
             
             // Calculate and display lead time
-            double leadTime = mrpService.calculateLeadTime(productId, quantity);
+            double leadTime = mrpService.calculateLeadTimeRecursive(productId, quantity, cbExclStock.isSelected());
             leadTimeValueLabel.setText(String.format("%.2f days", leadTime));
             
             tableModel.setRowCount(0);
@@ -188,10 +200,7 @@ public class MRPPanel extends JPanel {
                 return;
             }
             
-            // Save purchase orders
-            for (var po : purchaseOrders) {
-                // Note: PO is created in the service but we could save it here
-            }
+
             
             StringBuilder message = new StringBuilder("Generated " + purchaseOrders.size() + " purchase order(s):\n\n");
             for (var po : purchaseOrders) {
@@ -200,10 +209,20 @@ public class MRPPanel extends JPanel {
                        .append(product.getName()).append("\n");
                 message.append("Quantity: ").append(po.getQuantity()).append("\n");
                 message.append("Expected Delivery: ").append(po.getExpectedDeliveryDate()).append("\n\n");
+                message.append("Save?");
             }
             
-            JOptionPane.showMessageDialog(this, message.toString(), 
-                "Purchase Orders Generated", JOptionPane.INFORMATION_MESSAGE);
+            int ret = JOptionPane.showConfirmDialog(this, message.toString(), 
+                "Purchase Orders Generated", JOptionPane.OK_CANCEL_OPTION);
+            
+            if (ret == JOptionPane.OK_OPTION) {
+            	// Save purchase orders
+            	PurchaseOrderDAO poDAO = new PurchaseOrderDAO();
+            	for (var po : purchaseOrders) {
+            		// Note: PO is created in the service but we could save it here
+            		poDAO.create(po);
+            	}
+            }
             
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), 

@@ -5,6 +5,7 @@ import org.sql2o.Sql2o;
 import org.sql2o.converters.Converter;
 import org.sql2o.quirks.NoQuirks;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class DatabaseUtil {
         // Register LocalDateTime converter for Java 8 time support
         Map<Class, Converter> converters = new HashMap<>();
         converters.put(LocalDateTime.class, new LocalDateTimeConverter());
+        converters.put(LocalDate.class, new LocalDateConverter());
         
         Sql2o instance = new Sql2o(url, user, password, new NoQuirks(converters));
         instance.setDefaultCaseSensitive(false);

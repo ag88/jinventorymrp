@@ -3,12 +3,18 @@ package com.inventorymrp.ui;
 import com.inventorymrp.util.DatabaseUtil;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.*;
+import java.nio.MappedByteBuffer;
 
 /**
  * Main application entry point and window.
  */
 public class MainApp extends JFrame {
+	
+	MRPPanel mrppanel;
     
     public MainApp() {
         setTitle("Inventory Management with MRP");
@@ -37,8 +43,21 @@ public class MainApp extends JFrame {
         tabbedPane.addTab("Products", new ProductPanel());
         tabbedPane.addTab("BOM", new BOMPanel());
         tabbedPane.addTab("Inventory", new InventoryPanel());
-        tabbedPane.addTab("MRP", new MRPPanel());
+        mrppanel = new MRPPanel();
+        tabbedPane.addTab("MRP", mrppanel);
         tabbedPane.addTab("Purchase Orders", new PurchaseOrderPanel());
+        
+        tabbedPane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JTabbedPane tabbedpane = (JTabbedPane) e.getSource();
+				//System.out.println(tabbedpane.getSelectedIndex());
+				if (tabbedpane.getSelectedIndex() == 3) { // MRP
+					mrppanel.loadProducts();
+				}
+			}
+		});
         
         add(tabbedPane, BorderLayout.CENTER);
         

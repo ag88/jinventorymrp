@@ -8,7 +8,8 @@ CREATE TABLE products (
     unit_cost DECIMAL(15,2),
     stock_quantity INT DEFAULT 0,
     reorder_level INT DEFAULT 0,
-    lead_time_days INT DEFAULT 0,
+    order_lead_time DOUBLE DEFAULT 0.0,
+    item_lead_time DOUBLE DEFAULT 0.0,
     is_assembly BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

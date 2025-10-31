@@ -39,7 +39,16 @@ public class PurchaseOrderDAO {
     }
 
     public PurchaseOrder findById(Long id) {
-        String sql = "SELECT * FROM purchase_orders WHERE id = :id";
+        String sql = "SELECT id, product_id as productId, " 
+            + "quantity, "
+            + "status, "
+            + "order_date as orderDate, "
+            + "expected_delivery_date as expectedDeliveryDate, "
+            + "supplier, "
+            + "reference, "
+            + "created_at as createdAt, "
+            + "updated_at as updatedAt "
+        	+ "FROM purchase_orders WHERE id = :id";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
                 .addParameter("id", id)
@@ -68,7 +77,7 @@ public class PurchaseOrderDAO {
     }
 
     public List<PurchaseOrder> findAll() {
-        String sql = "SELECT product_id as productId, " 
+        String sql = "SELECT id, product_id as productId, " 
         		+ "quantity, "
         		+ "status, "
         		+ "order_date as orderDate, "

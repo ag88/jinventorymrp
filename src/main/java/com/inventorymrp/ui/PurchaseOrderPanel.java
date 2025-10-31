@@ -4,6 +4,7 @@ import com.inventorymrp.dao.ProductDAO;
 import com.inventorymrp.dao.PurchaseOrderDAO;
 import com.inventorymrp.model.Product;
 import com.inventorymrp.model.PurchaseOrder;
+import com.inventorymrp.service.InventoryService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -162,8 +163,13 @@ public class PurchaseOrderPanel extends JPanel {
         
         if (newStatus != null) {
             try {
+            	String oldstatus = po.getStatus();
                 po.setStatus(newStatus);
                 purchaseOrderDAO.update(po);
+                if (newStatus.equals("RECEIVED") && oldstatus.equals("ORDERED")) {
+                	InventoryService inventoryservice = new InventoryService();
+                	inventoryservice.addStock(po.getProductId(), po.getQuantity(), Long.toString(po.getId()));
+                }
                 loadPurchaseOrders();
                 JOptionPane.showMessageDialog(this, "Status updated successfully!");
             } catch (Exception ex) {
