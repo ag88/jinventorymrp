@@ -38,7 +38,10 @@ public class InventoryTransactionDAO {
     }
 
     public InventoryTransaction findById(Long id) {
-        String sql = "SELECT * FROM inventory_transactions WHERE id = :id";
+        String sql = "SELECT id, product_id as productId, transaction_type as transactionType, " +
+                     "quantity, reference, transaction_date as transactionDate, " +
+                     "created_at as createdAt " +
+                     "FROM inventory_transactions WHERE id = :id";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
                 .addParameter("id", id)
@@ -47,7 +50,10 @@ public class InventoryTransactionDAO {
     }
 
     public List<InventoryTransaction> findByProductId(Long productId) {
-        String sql = "SELECT * FROM inventory_transactions WHERE product_id = :productId " +
+        String sql = "SELECT id, product_id as productId, transaction_type as transactionType, " +
+                     "quantity, reference, transaction_date as transactionDate, " +
+                     "created_at as createdAt " +
+                     "FROM inventory_transactions WHERE product_id = :productId " +
                      "ORDER BY transaction_date DESC";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
@@ -57,7 +63,10 @@ public class InventoryTransactionDAO {
     }
 
     public List<InventoryTransaction> findAll() {
-        String sql = "SELECT * FROM inventory_transactions ORDER BY transaction_date DESC";
+        String sql = "SELECT id, product_id as productId, transaction_type as transactionType, " +
+                     "quantity, reference, transaction_date as transactionDate, " +
+                     "created_at as createdAt " +
+                     "FROM inventory_transactions ORDER BY transaction_date DESC";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
                 .executeAndFetch(InventoryTransaction.class);
@@ -65,7 +74,10 @@ public class InventoryTransactionDAO {
     }
 
     public List<InventoryTransaction> findByType(String transactionType) {
-        String sql = "SELECT * FROM inventory_transactions WHERE transaction_type = :type " +
+        String sql = "SELECT id, product_id as productId, transaction_type as transactionType, " +
+                     "quantity, reference, transaction_date as transactionDate, " +
+                     "created_at as createdAt " +
+                     "FROM inventory_transactions WHERE transaction_type = :type " +
                      "ORDER BY transaction_date DESC";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
