@@ -169,7 +169,7 @@ class MRPServiceTest {
 
         Product comp = new Product("COMP", "Component");
         comp.setStockQuantity(100); // Sufficient stock
-        comp.setLeadTimeDays(5);
+        comp.setOrderLeadTime(5.0);
         comp = productDAO.create(comp);
 
         bomItemDAO.create(new BOMItem(assembly.getId(), comp.getId(), new BigDecimal("2")));
@@ -189,7 +189,7 @@ class MRPServiceTest {
 
         Product comp = new Product("COMP", "Component");
         comp.setStockQuantity(10); // Only 10 in stock
-        comp.setLeadTimeDays(7);
+        comp.setOrderLeadTime(7.0);
         comp = productDAO.create(comp);
 
         bomItemDAO.create(new BOMItem(assembly.getId(), comp.getId(), new BigDecimal("5")));
@@ -213,12 +213,12 @@ class MRPServiceTest {
 
         Product comp1 = new Product("COMP1", "Component 1");
         comp1.setStockQuantity(5);
-        comp1.setLeadTimeDays(5);
+        comp1.setOrderLeadTime(5.0);
         comp1 = productDAO.create(comp1);
 
         Product comp2 = new Product("COMP2", "Component 2");
         comp2.setStockQuantity(100); // Sufficient
-        comp2.setLeadTimeDays(3);
+        comp2.setOrderLeadTime(3.0);
         comp2 = productDAO.create(comp2);
 
         bomItemDAO.create(new BOMItem(assembly.getId(), comp1.getId(), new BigDecimal("2")));
@@ -231,5 +231,31 @@ class MRPServiceTest {
         assertEquals(1, purchaseOrders.size());
         assertEquals(comp1.getId(), purchaseOrders.get(0).getProductId());
         assertEquals(15, purchaseOrders.get(0).getQuantity());
+    }
+
+    @Test
+    void testCalculateLeadTime() {
+        Product product = new Product("PROD1", "Product 1");
+        product.setOrderLeadTime(5.0);
+        product.setItemLeadTime(0.5);
+        product = productDAO.create(product);
+
+        // Lead time = orderLeadTime + (quantity * itemLeadTime)
+        // = 5.0 + (10 * 0.5) = 10.0
+        double leadTime = mrpService.calculateLeadTime(product.getId(), 10);
+        assertEquals(10.0, leadTime, 0.001);
+    }
+
+    @Test
+    void testCalculateLeadTime_ZeroItemLeadTime() {
+        Product product = new Product("PROD2", "Product 2");
+        product.setOrderLeadTime(3.0);
+        product.setItemLeadTime(0.0);
+        product = productDAO.create(product);
+
+        // Lead time = orderLeadTime + (quantity * itemLeadTime)
+        // = 3.0 + (20 * 0.0) = 3.0
+        double leadTime = mrpService.calculateLeadTime(product.getId(), 20);
+        assertEquals(3.0, leadTime, 0.001);
     }
 }

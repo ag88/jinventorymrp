@@ -43,7 +43,8 @@ public class MRPDemo {
         frame.setUnit("pcs");
         frame.setUnitCost(new BigDecimal("150.00"));
         frame.setStockQuantity(5);
-        frame.setLeadTimeDays(10);
+        frame.setOrderLeadTime(10.0);
+        frame.setItemLeadTime(0.0);
         frame = productDAO.create(frame);
         System.out.println("  Created: " + frame);
         
@@ -51,7 +52,8 @@ public class MRPDemo {
         wheel.setUnit("pcs");
         wheel.setUnitCost(new BigDecimal("45.00"));
         wheel.setStockQuantity(15);
-        wheel.setLeadTimeDays(7);
+        wheel.setOrderLeadTime(7.0);
+        wheel.setItemLeadTime(0.0);
         wheel = productDAO.create(wheel);
         System.out.println("  Created: " + wheel);
         
@@ -59,7 +61,8 @@ public class MRPDemo {
         chain.setUnit("pcs");
         chain.setUnitCost(new BigDecimal("25.00"));
         chain.setStockQuantity(8);
-        chain.setLeadTimeDays(5);
+        chain.setOrderLeadTime(5.0);
+        chain.setItemLeadTime(0.0);
         chain = productDAO.create(chain);
         System.out.println("  Created: " + chain);
         

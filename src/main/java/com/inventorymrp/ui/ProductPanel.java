@@ -23,7 +23,7 @@ public class ProductPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         // Create table
-        String[] columns = {"ID", "Code", "Name", "Unit", "Cost", "Stock", "Reorder Level", "Lead Time", "Is Assembly"};
+        String[] columns = {"ID", "Code", "Name", "Unit", "Cost", "Stock", "Reorder Level", "Order Lead Time", "Item Lead Time", "Is Assembly"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -68,7 +68,8 @@ public class ProductPanel extends JPanel {
                 p.getUnitCost(),
                 p.getStockQuantity(),
                 p.getReorderLevel(),
-                p.getLeadTimeDays(),
+                p.getOrderLeadTime(),
+                p.getItemLeadTime(),
                 p.getIsAssembly() ? "Yes" : "No"
             };
             tableModel.addRow(row);
@@ -83,10 +84,11 @@ public class ProductPanel extends JPanel {
         JTextField costField = new JTextField(10);
         JTextField stockField = new JTextField(10);
         JTextField reorderField = new JTextField(10);
-        JTextField leadTimeField = new JTextField(10);
+        JTextField orderLeadTimeField = new JTextField(10);
+        JTextField itemLeadTimeField = new JTextField(10);
         JCheckBox isAssemblyCheck = new JCheckBox();
         
-        JPanel panel = new JPanel(new GridLayout(9, 2, 5, 5));
+        JPanel panel = new JPanel(new GridLayout(10, 2, 5, 5));
         panel.add(new JLabel("Code:"));
         panel.add(codeField);
         panel.add(new JLabel("Name:"));
@@ -101,8 +103,10 @@ public class ProductPanel extends JPanel {
         panel.add(stockField);
         panel.add(new JLabel("Reorder Level:"));
         panel.add(reorderField);
-        panel.add(new JLabel("Lead Time (days):"));
-        panel.add(leadTimeField);
+        panel.add(new JLabel("Order Lead Time (days):"));
+        panel.add(orderLeadTimeField);
+        panel.add(new JLabel("Item Lead Time (days/item):"));
+        panel.add(itemLeadTimeField);
         panel.add(new JLabel("Is Assembly:"));
         panel.add(isAssemblyCheck);
         
@@ -121,7 +125,8 @@ public class ProductPanel extends JPanel {
                 }
                 product.setStockQuantity(stockField.getText().isEmpty() ? 0 : Integer.parseInt(stockField.getText()));
                 product.setReorderLevel(reorderField.getText().isEmpty() ? 0 : Integer.parseInt(reorderField.getText()));
-                product.setLeadTimeDays(leadTimeField.getText().isEmpty() ? 0 : Integer.parseInt(leadTimeField.getText()));
+                product.setOrderLeadTime(orderLeadTimeField.getText().isEmpty() ? 0.0 : Double.parseDouble(orderLeadTimeField.getText()));
+                product.setItemLeadTime(itemLeadTimeField.getText().isEmpty() ? 0.0 : Double.parseDouble(itemLeadTimeField.getText()));
                 product.setIsAssembly(isAssemblyCheck.isSelected());
                 
                 productDAO.create(product);
@@ -156,10 +161,11 @@ public class ProductPanel extends JPanel {
         JTextField costField = new JTextField(product.getUnitCost() != null ? product.getUnitCost().toString() : "", 10);
         JTextField stockField = new JTextField(String.valueOf(product.getStockQuantity()), 10);
         JTextField reorderField = new JTextField(String.valueOf(product.getReorderLevel()), 10);
-        JTextField leadTimeField = new JTextField(String.valueOf(product.getLeadTimeDays()), 10);
+        JTextField orderLeadTimeField = new JTextField(product.getOrderLeadTime() != null ? String.valueOf(product.getOrderLeadTime()) : "0.0", 10);
+        JTextField itemLeadTimeField = new JTextField(product.getItemLeadTime() != null ? String.valueOf(product.getItemLeadTime()) : "0.0", 10);
         JCheckBox isAssemblyCheck = new JCheckBox("", product.getIsAssembly());
         
-        JPanel panel = new JPanel(new GridLayout(9, 2, 5, 5));
+        JPanel panel = new JPanel(new GridLayout(10, 2, 5, 5));
         panel.add(new JLabel("Code:"));
         panel.add(codeField);
         panel.add(new JLabel("Name:"));
@@ -174,8 +180,10 @@ public class ProductPanel extends JPanel {
         panel.add(stockField);
         panel.add(new JLabel("Reorder Level:"));
         panel.add(reorderField);
-        panel.add(new JLabel("Lead Time (days):"));
-        panel.add(leadTimeField);
+        panel.add(new JLabel("Order Lead Time (days):"));
+        panel.add(orderLeadTimeField);
+        panel.add(new JLabel("Item Lead Time (days/item):"));
+        panel.add(itemLeadTimeField);
         panel.add(new JLabel("Is Assembly:"));
         panel.add(isAssemblyCheck);
         
@@ -193,7 +201,8 @@ public class ProductPanel extends JPanel {
                 }
                 product.setStockQuantity(Integer.parseInt(stockField.getText()));
                 product.setReorderLevel(Integer.parseInt(reorderField.getText()));
-                product.setLeadTimeDays(Integer.parseInt(leadTimeField.getText()));
+                product.setOrderLeadTime(Double.parseDouble(orderLeadTimeField.getText()));
+                product.setItemLeadTime(Double.parseDouble(itemLeadTimeField.getText()));
                 product.setIsAssembly(isAssemblyCheck.isSelected());
                 
                 productDAO.update(product);

@@ -44,7 +44,8 @@ class ProductDAOTest {
         product.setUnitCost(new BigDecimal("10.50"));
         product.setStockQuantity(100);
         product.setReorderLevel(20);
-        product.setLeadTimeDays(5);
+        product.setOrderLeadTime(5.0);
+        product.setItemLeadTime(0.5);
         product.setIsAssembly(false);
 
         Product created = productDAO.create(product);

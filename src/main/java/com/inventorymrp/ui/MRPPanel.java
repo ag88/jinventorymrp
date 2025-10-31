@@ -19,6 +19,7 @@ public class MRPPanel extends JPanel {
     private final ProductDAO productDAO;
     private JTable resultsTable;
     private DefaultTableModel tableModel;
+    private JLabel leadTimeValueLabel;
     
     public MRPPanel() {
         this.mrpService = new MRPService();
@@ -57,8 +58,15 @@ public class MRPPanel extends JPanel {
         resultsTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(resultsTable);
         
+        // Create bottom panel for lead time display
+        JPanel leadTimePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        leadTimePanel.add(new JLabel("Lead Time:"));
+        leadTimeValueLabel = new JLabel("N/A");
+        leadTimePanel.add(leadTimeValueLabel);
+        
         add(inputPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+        add(leadTimePanel, BorderLayout.SOUTH);
         
         // Load products
         loadProducts(productCombo);
@@ -89,6 +97,10 @@ public class MRPPanel extends JPanel {
             Integer quantity = Integer.parseInt(quantityField.getText());
             
             Map<Long, Integer> requirements = mrpService.calculateMaterialRequirements(productId, quantity);
+            
+            // Calculate and display lead time
+            double leadTime = mrpService.calculateLeadTime(productId, quantity);
+            leadTimeValueLabel.setText(String.format("%.2f days", leadTime));
             
             tableModel.setRowCount(0);
             for (Map.Entry<Long, Integer> entry : requirements.entrySet()) {
