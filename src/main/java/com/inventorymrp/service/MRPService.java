@@ -138,6 +138,7 @@ public class MRPService {
 	 * Calculate total lead time for a product based on demand quantity. Lead time =
 	 * orderLeadTime + (number of items * itemLeadTime) This applies to all
 	 * products, providing flexibility for different production scenarios.
+	 * @param exclstock exclude existing stocks while calculating the lead time
 	 */
 	public double calculateLeadTime(Long productId, Integer quantity, boolean exclstock) {
 		Product product = productDAO.findById(productId);
@@ -159,6 +160,12 @@ public class MRPService {
 		}
 	}
 
+	/**
+	 * Calculate total lead time for a product by recursively considering the longest 
+	 * lead time of the parts, calls {@link calculateLeadTime} for each part
+	 * and summing up the longest lead time in addition to itself
+	 * @param exclstock exclude existing stocks while calculating the lead time
+	 */
 	public double calculateLeadTimeRecursive(Long productId, Integer quantity, boolean exclstock) { 
 
 		Product product = productDAO.findById(productId);

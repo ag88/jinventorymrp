@@ -182,9 +182,11 @@ mvn test
 
 ### Run Application
 ```bash
-java -jar target/jinventorymrp-1.0.0-SNAPSHOT.jar
+java -jar target/jinventorymrp-1.0.0-jar-with-dependencies.jar
 ```
-
+**note**: it creates a folder `data` in the current working directory with a file
+`inventorydb.mv.db` which is the H2 embedded database
+   
 ### Run Demo
 ```bash
 mvn exec:java -Dexec.mainClass="com.inventorymrp.MRPDemo"
