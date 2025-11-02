@@ -51,7 +51,7 @@ public class MRPPanel extends JPanel {
         inputPanel.add(generatePOButton);
         
         // Create table for results
-        String[] columns = {"Product Code", "Product Name", "Required Qty", "Available Qty", "Shortage", "Status"};
+        String[] columns = {"Product Code", "Product Name", "Required Qty", "Available Qty", "Shortage", "Lead time", "Status"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -118,12 +118,14 @@ public class MRPPanel extends JPanel {
             for (Map.Entry<Long, Integer> entry : requirements.entrySet()) {
                 Product product = productDAO.findById(entry.getKey());
                 if (product != null) {
+                	int shortage = Math.max(0, entry.getValue() - (cbExclStock.isSelected() ? 0 : product.getStockQuantity())); 
                     Object[] row = {
                         product.getCode(),
                         product.getName(),
                         entry.getValue(),
                         product.getStockQuantity(),
-                        Math.max(0, entry.getValue() - product.getStockQuantity()),
+                        shortage,
+                        mrpService.calculateLeadTime(product.getId(), shortage, false),
                         product.getStockQuantity() >= entry.getValue() ? "OK" : "SHORTAGE"
                     };
                     tableModel.addRow(row);

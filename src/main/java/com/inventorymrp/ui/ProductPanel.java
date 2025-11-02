@@ -23,7 +23,7 @@ public class ProductPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         // Create table
-        String[] columns = {"ID", "Code", "Name", "Unit", "Cost", "Stock", "Reorder Level", "Order Lead Time", "Item Lead Time", "Is Assembly"};
+        String[] columns = {"ID", "Code", "Name", "Unit", "Cost", "Stock", "Reorder Level", "Order Lead Time", "Item Lead Time", "Is Assembly", "Non Purchase"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -70,7 +70,8 @@ public class ProductPanel extends JPanel {
                 p.getReorderLevel(),
                 p.getOrderLeadTime(),
                 p.getItemLeadTime(),
-                p.getIsAssembly() ? "Yes" : "No"
+                p.getIsAssembly() ? "Yes" : "No",
+                p.getNonPurchase() ? "Yes" : "No"
             };
             tableModel.addRow(row);
         }
@@ -87,8 +88,9 @@ public class ProductPanel extends JPanel {
         JTextField orderLeadTimeField = new JTextField(10);
         JTextField itemLeadTimeField = new JTextField(10);
         JCheckBox isAssemblyCheck = new JCheckBox();
+        JCheckBox nonPurchaseCheck = new JCheckBox();
         
-        JPanel panel = new JPanel(new GridLayout(10, 2, 5, 5));
+        JPanel panel = new JPanel(new GridLayout(11, 2, 5, 5));
         panel.add(new JLabel("Code:"));
         panel.add(codeField);
         panel.add(new JLabel("Name:"));
@@ -109,6 +111,8 @@ public class ProductPanel extends JPanel {
         panel.add(itemLeadTimeField);
         panel.add(new JLabel("Is Assembly:"));
         panel.add(isAssemblyCheck);
+        panel.add(new JLabel("Non Purchase:"));
+        panel.add(nonPurchaseCheck);
         
         int result = JOptionPane.showConfirmDialog(this, panel, "Add Product", 
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -128,6 +132,7 @@ public class ProductPanel extends JPanel {
                 product.setOrderLeadTime(orderLeadTimeField.getText().isEmpty() ? 0.0 : Double.parseDouble(orderLeadTimeField.getText()));
                 product.setItemLeadTime(itemLeadTimeField.getText().isEmpty() ? 0.0 : Double.parseDouble(itemLeadTimeField.getText()));
                 product.setIsAssembly(isAssemblyCheck.isSelected());
+                product.setNonPurchase(nonPurchaseCheck.isSelected());                
                 
                 productDAO.create(product);
                 loadProducts();
@@ -164,8 +169,9 @@ public class ProductPanel extends JPanel {
         JTextField orderLeadTimeField = new JTextField(product.getOrderLeadTime() != null ? String.valueOf(product.getOrderLeadTime()) : "0.0", 10);
         JTextField itemLeadTimeField = new JTextField(product.getItemLeadTime() != null ? String.valueOf(product.getItemLeadTime()) : "0.0", 10);
         JCheckBox isAssemblyCheck = new JCheckBox("", product.getIsAssembly());
+        JCheckBox nonPurchaseCheck = new JCheckBox("", product.getNonPurchase());
         
-        JPanel panel = new JPanel(new GridLayout(10, 2, 5, 5));
+        JPanel panel = new JPanel(new GridLayout(11, 2, 5, 5));
         panel.add(new JLabel("Code:"));
         panel.add(codeField);
         panel.add(new JLabel("Name:"));
@@ -186,6 +192,8 @@ public class ProductPanel extends JPanel {
         panel.add(itemLeadTimeField);
         panel.add(new JLabel("Is Assembly:"));
         panel.add(isAssemblyCheck);
+        panel.add(new JLabel("Non Purchase:"));
+        panel.add(nonPurchaseCheck);        
         
         int result = JOptionPane.showConfirmDialog(this, panel, "Edit Product", 
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -204,6 +212,7 @@ public class ProductPanel extends JPanel {
                 product.setOrderLeadTime(Double.parseDouble(orderLeadTimeField.getText()));
                 product.setItemLeadTime(Double.parseDouble(itemLeadTimeField.getText()));
                 product.setIsAssembly(isAssemblyCheck.isSelected());
+                product.setNonPurchase(nonPurchaseCheck.isSelected());
                 
                 productDAO.update(product);
                 loadProducts();

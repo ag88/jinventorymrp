@@ -24,9 +24,11 @@ public class ProductDAO {
 
     public Product create(Product product) {
         String sql = "INSERT INTO products (code, name, description, unit, unit_cost, " +
-                     "stock_quantity, reorder_level, order_lead_time, item_lead_time, is_assembly, created_at, updated_at) " +
+                     "stock_quantity, reorder_level, order_lead_time, item_lead_time, is_assembly, non_purchase, " +
+                     " created_at, updated_at) " +
                      "VALUES (:code, :name, :description, :unit, :unitCost, " +
-                     ":stockQuantity, :reorderLevel, :orderLeadTime, :itemLeadTime, :isAssembly, :createdAt, :updatedAt)";
+                     ":stockQuantity, :reorderLevel, :orderLeadTime, :itemLeadTime, :isAssembly, :nonPurchase, " +
+                     ":createdAt, :updatedAt)";
         
         try (Connection con = sql2o.open()) {
             long id = con.createQuery(sql, true)
@@ -42,7 +44,8 @@ public class ProductDAO {
         String sql = "SELECT id, code, name, description, unit, " +
                      "unit_cost as unitCost, stock_quantity as stockQuantity, " +
                      "reorder_level as reorderLevel, order_lead_time as orderLeadTime, " +
-                     "item_lead_time as itemLeadTime, is_assembly as isAssembly " +
+                     "item_lead_time as itemLeadTime, is_assembly as isAssembly, " +
+                     "non_purchase as nonPurchase " +
                      "FROM products WHERE id = :id";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
@@ -55,7 +58,8 @@ public class ProductDAO {
         String sql = "SELECT id, code, name, description, unit, " +
                      "unit_cost as unitCost, stock_quantity as stockQuantity, " +
                      "reorder_level as reorderLevel, order_lead_time as orderLeadTime, " +
-                     "item_lead_time as itemLeadTime, is_assembly as isAssembly " +
+                     "item_lead_time as itemLeadTime, is_assembly as isAssembly, " +
+                     "non_purchase as nonPurchase " +
                      "FROM products WHERE code = :code";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
@@ -68,7 +72,8 @@ public class ProductDAO {
         String sql = "SELECT id, code, name, description, unit, " +
                      "unit_cost as unitCost, stock_quantity as stockQuantity, " +
                      "reorder_level as reorderLevel, order_lead_time as orderLeadTime, " +
-                     "item_lead_time as itemLeadTime, is_assembly as isAssembly " +
+                     "item_lead_time as itemLeadTime, is_assembly as isAssembly, " +
+                     "non_purchase as nonPurchase, " +
                      "FROM products ORDER BY code";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
@@ -80,7 +85,8 @@ public class ProductDAO {
         String sql = "SELECT id, code, name, description, unit, " +
                      "unit_cost as unitCost, stock_quantity as stockQuantity, " +
                      "reorder_level as reorderLevel, order_lead_time as orderLeadTime, " +
-                     "item_lead_time as itemLeadTime, is_assembly as isAssembly " +
+                     "item_lead_time as itemLeadTime, is_assembly as isAssembly, " +
+                     "non_purchase as nonPurchase " +
                      "FROM products WHERE is_assembly = true ORDER BY code";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
@@ -92,7 +98,8 @@ public class ProductDAO {
         String sql = "SELECT id, code, name, description, unit, " +
                      "unit_cost as unitCost, stock_quantity as stockQuantity, " +
                      "reorder_level as reorderLevel, order_lead_time as orderLeadTime, " +
-                     "item_lead_time as itemLeadTime, is_assembly as isAssembly " +
+                     "item_lead_time as itemLeadTime, is_assembly as isAssembly, " +
+                     "non_purchase as nonPurchase " +
                      "FROM products WHERE is_assembly = false ORDER BY code";
         try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
@@ -105,7 +112,8 @@ public class ProductDAO {
         String sql = "UPDATE products SET code = :code, name = :name, description = :description, " +
                      "unit = :unit, unit_cost = :unitCost, stock_quantity = :stockQuantity, " +
                      "reorder_level = :reorderLevel, order_lead_time = :orderLeadTime, " +
-                     "item_lead_time = :itemLeadTime, is_assembly = :isAssembly, updated_at = :updatedAt " +
+                     "item_lead_time = :itemLeadTime, is_assembly = :isAssembly," +
+                     "non_purchase = :nonPurchase, updated_at = :updatedAt " +
                      "WHERE id = :id";
         
         try (Connection con = sql2o.open()) {

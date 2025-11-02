@@ -64,10 +64,12 @@ public class MRPService {
 				// components
 				calculateRequirementsRecursive(childId, requiredQty, requirements);
 			}
-		} else {
-			// For non-assembly items (leaf components), add to requirements
-			requirements.put(productId, requirements.getOrDefault(productId, 0) + quantity);
-		}
+		} //else {
+		
+		// For non-assembly items (leaf components), add to requirements
+		// edit: add original product assembly itself into bom items 
+		requirements.put(productId, requirements.getOrDefault(productId, 0) + quantity);
+
 	}
 
 	/**
@@ -86,6 +88,9 @@ public class MRPService {
 				continue;
 			}
 
+			if (material.getNonPurchase())
+				continue;
+			
 			// Calculate net requirement (required - available stock)
 			Integer netRequirement = requiredQty - material.getStockQuantity();
 

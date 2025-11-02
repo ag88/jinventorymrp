@@ -53,7 +53,7 @@ class MRPServiceTest {
     void testCalculateMaterialRequirements_SimpleComponent() {
         // Create a simple component (no BOM)
         Product component = new Product("COMP1", "Simple Component");
-        component.setIsAssembly(false);
+        component.setIsAssembly(false);        
         component = productDAO.create(component);
 
         Map<Long, Integer> requirements = mrpService.calculateMaterialRequirements(component.getId(), 10);
@@ -82,7 +82,7 @@ class MRPServiceTest {
         // Calculate requirements to build 5 assemblies
         Map<Long, Integer> requirements = mrpService.calculateMaterialRequirements(assembly.getId(), 5);
 
-        assertEquals(2, requirements.size());
+        assertEquals(3, requirements.size());
         assertEquals(10, requirements.get(comp1.getId())); // 5 * 2 = 10
         assertEquals(15, requirements.get(comp2.getId())); // 5 * 3 = 15
     }
@@ -165,6 +165,7 @@ class MRPServiceTest {
     void testGeneratePurchaseOrders_NoShortage() {
         Product assembly = new Product("ASSY", "Assembly");
         assembly.setIsAssembly(true);
+        assembly.setNonPurchase(true);
         assembly = productDAO.create(assembly);
 
         Product comp = new Product("COMP", "Component");
@@ -185,6 +186,7 @@ class MRPServiceTest {
     void testGeneratePurchaseOrders_WithShortage() {
         Product assembly = new Product("ASSY", "Assembly");
         assembly.setIsAssembly(true);
+        assembly.setNonPurchase(true);
         assembly = productDAO.create(assembly);
 
         Product comp = new Product("COMP", "Component");
@@ -209,6 +211,7 @@ class MRPServiceTest {
     void testGeneratePurchaseOrders_MultipleComponents() {
         Product assembly = new Product("ASSY", "Assembly");
         assembly.setIsAssembly(true);
+        assembly.setNonPurchase(true);
         assembly = productDAO.create(assembly);
 
         Product comp1 = new Product("COMP1", "Component 1");

@@ -11,6 +11,7 @@ CREATE TABLE products (
     order_lead_time DOUBLE DEFAULT 0.0,
     item_lead_time DOUBLE DEFAULT 0.0,
     is_assembly BOOLEAN DEFAULT FALSE,
+    non_purchase BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -19,6 +19,7 @@ public class Product {
     private Double orderLeadTime;
     private Double itemLeadTime;
     private Boolean isAssembly; // true if this product has a BOM
+    private Boolean nonPurchase; // non purchase product
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -28,6 +29,7 @@ public class Product {
         this.orderLeadTime = 0.0;
         this.itemLeadTime = 0.0;
         this.isAssembly = false;
+        this.nonPurchase = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -122,12 +124,20 @@ public class Product {
     public Boolean getIsAssembly() {
         return isAssembly;
     }
-
+    
     public void setIsAssembly(Boolean isAssembly) {
         this.isAssembly = isAssembly;
     }
+    
+    public Boolean getNonPurchase() {
+		return nonPurchase;
+	}
 
-    public LocalDateTime getCreatedAt() {
+	public void setNonPurchase(Boolean nonPurchase) {
+		this.nonPurchase = nonPurchase;
+	}
+
+	public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
@@ -151,6 +161,7 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", stockQuantity=" + stockQuantity +
                 ", isAssembly=" + isAssembly +
+                ", nonPurchase=" + nonPurchase +
                 '}';
     }
 }
