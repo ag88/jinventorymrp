@@ -125,7 +125,7 @@ public class MRPPanel extends JPanel {
                         entry.getValue(),
                         product.getStockQuantity(),
                         shortage,
-                        mrpService.calculateLeadTime(product.getId(), shortage, false),
+                        mrpService.calculateLeadTime(product.getId(), shortage, true),
                         product.getStockQuantity() >= entry.getValue() ? "OK" : "SHORTAGE"
                     };
                     tableModel.addRow(row);
@@ -163,6 +163,7 @@ public class MRPPanel extends JPanel {
                     avail.getRequiredQuantity(),
                     avail.getAvailableQuantity(),
                     avail.getShortage(),
+                    mrpService.calculateLeadTime(avail.getProductId(), avail.getShortage(), true),
                     avail.getSufficient() ? "SUFFICIENT" : "INSUFFICIENT"
                 };
                 tableModel.addRow(row);
@@ -210,10 +211,10 @@ public class MRPPanel extends JPanel {
                 message.append("Product: ").append(product.getCode()).append(" - ")
                        .append(product.getName()).append("\n");
                 message.append("Quantity: ").append(po.getQuantity()).append("\n");
-                message.append("Expected Delivery: ").append(po.getExpectedDeliveryDate()).append("\n\n");
-                message.append("Save?");
+                message.append("Expected Delivery: ").append(po.getExpectedDeliveryDate()).append("\n\n");                
             }
             
+            message.append("Save?");
             int ret = JOptionPane.showConfirmDialog(this, message.toString(), 
                 "Purchase Orders Generated", JOptionPane.OK_CANCEL_OPTION);
             

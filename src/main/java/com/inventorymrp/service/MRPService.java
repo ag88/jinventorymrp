@@ -156,6 +156,9 @@ public class MRPService {
 		
 		if (exclstock) {
 			// BOM item lead time = orderLeadTime + number of items x itemLeadTime
+			if (quantity == 0)
+				return 0;
+			
 			return orderLeadTime + (quantity * itemLeadTime);
 		} else {
 			if (product.getStockQuantity() >= quantity )
